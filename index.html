@@ -386,6 +386,59 @@ document.getElementById('add-btn').addEventListener('click', async ()=>{
   render();
 });
 
+// Afbeelding vanaf de eigen pc toevoegen.
+// De afbeelding wordt als data URL opgeslagen in Firebase,
+// zodat andere mensen met dezelfde tierlist-link hem ook kunnen zien.
+document.getElementById('new-file').addEventListener('change', async (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+
+  if(!file.type.startsWith('image/')){
+    setStatus('Kies een afbeeldingsbestand.');
+    e.target.value = '';
+    return;
+  }
+
+  // Voorkom dat zeer grote foto's de database onnodig zwaar maken.
+  if(file.size > 8 * 1024 * 1024){
+    setStatus('Afbeelding is te groot. Gebruik maximaal 8 MB.');
+    e.target.value = '';
+    return;
+  }
+
+  setStatus('Afbeelding wordt toegevoegd...');
+
+  const reader = new FileReader();
+  reader.onload = async ()=>{
+    try{
+      const item = {
+        id: uid(),
+        image: reader.result,
+        tier: null,
+        addedAt: Date.now()
+      };
+
+      items.push(item);
+      await saveItems();
+      render();
+      setStatus('Afbeelding toegevoegd.');
+    }catch(err){
+      console.error(err);
+      items = items.filter(i => i.id !== item.id);
+      setStatus('Opslaan mislukt. Controleer je Firebase-database.');
+    }finally{
+      e.target.value = '';
+    }
+  };
+
+  reader.onerror = ()=>{
+    setStatus('Kon de afbeelding niet lezen.');
+    e.target.value = '';
+  };
+
+  reader.readAsDataURL(file);
+});
+
 buildTiers();
 loadItems();
 </script>
