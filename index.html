@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<title>Coole Vondsten</title>
+<style>
+  :root{
+    --paper:#F3EEE1;
+    --ink:#2B2620;
+    --ink-soft:#6B6455;
+    --pine:#1F3A2E;
+    --pine-light:#2E5443;
+    --coral:#D9603C;
+    --line: rgba(43,38,32,0.15);
+    --card: #FFFDF7;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:900px;margin:0 auto;padding:32px 20px 80px;}
+  header{margin-bottom:28px;}
+  h1{
+    font-size:34px;
+    margin:0 0 4px;
+    letter-spacing:0.5px;
+    font-weight:700;
+  }
+  .sub{
+    font-family: Arial, Helvetica, sans-serif;
+    color:var(--ink-soft);
+    font-size:14px;
+    margin:0;
+  }
+  .who{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:13px;
+    margin-top:14px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .who input{
+    font-family: Arial, Helvetica, sans-serif;
+    border:1px solid var(--line);
+    background:var(--card);
+    border-radius:4px;
+    padding:6px 10px;
+    font-size:13px;
+    color:var(--ink);
+  }
+  .add-panel{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:16px 18px;
+    margin-bottom:36px;
+  }
+  .add-panel h2{
+    font-size:16px;
+    margin:0 0 12px;
+    font-weight:700;
+  }
+  .add-row{
+    display:grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap:10px;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  .add-row input, .add-row textarea{
+    width:100%;
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:8px 10px;
+    font-size:13px;
+    font-family: Arial, Helvetica, sans-serif;
+    color:var(--ink);
+    background:#fff;
+  }
+  .add-row textarea{grid-column: 1 / -1; resize:vertical; min-height:44px;}
+  .add-btn{
+    grid-column: 1 / -1;
+    justify-self:start;
+    margin-top:2px;
+    background:var(--pine);
+    color:#F3EEE1;
+    border:none;
+    border-radius:4px;
+    padding:9px 18px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:13px;
+    font-weight:bold;
+    cursor:pointer;
+    letter-spacing:0.3px;
+  }
+  .add-btn:hover{background:var(--pine-light);}
+  .add-btn:disabled{opacity:0.5;cursor:default;}
+
+  .tier{
+    display:flex;
+    border:1px solid var(--line);
+    border-radius:6px;
+    margin-bottom:10px;
+    background:var(--card);
+    min-height:76px;
+    overflow:hidden;
+  }
+  .tier-label{
+    width:64px;
+    flex:0 0 64px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    font-weight:700;
+    color:#fff;
+  }
+  .tier-body{
+    flex:1;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    padding:10px;
+    align-content:flex-start;
+  }
+  .tier-body.dragover{background:rgba(31,58,46,0.07);}
+  .tier-body.empty::after{
+    content:'sleep hier iets naartoe';
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:12px;
+    color:var(--ink-soft);
+    align-self:center;
+    font-style:italic;
+  }
+
+  .pool-section{margin-top:30px;}
+  .pool-section h2{
+    font-size:16px;
+    margin:0 0 10px;
+    font-weight:700;
+  }
+  .pool{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    min-height:60px;
+    padding:12px;
+    border:1px dashed var(--line);
+    border-radius:6px;
+  }
+  .pool.dragover{background:rgba(217,96,60,0.08);}
+
+  .item{
+    background:#fff;
+    border:1px solid var(--line);
+    border-left:3px solid var(--coral);
+    border-radius:4px;
+    padding:7px 10px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:12.5px;
+    width:130px;
+    cursor:grab;
+    line-height:1.4;
+  }
+  .item.has-image{padding:0 0 7px;overflow:hidden;}
+  .item.has-image .name, .item.has-image .note, .item.has-image .meta{padding-left:10px;padding-right:10px;}
+  .item .thumb{
+    width:100%;
+    height:90px;
+    object-fit:cover;
+    display:block;
+    margin-bottom:6px;
+    background:var(--paper);
+  }
+  .item:active{cursor:grabbing;}
+  .item .name{font-weight:bold;color:var(--ink);}
+  .item .name a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--coral);}
+  .item .note{color:var(--ink-soft);margin-top:2px;}
+  .item .meta{
+    color:var(--ink-soft);
+    font-size:10.5px;
+    margin-top:4px;
+    display:flex;
+    justify-content:space-between;
+    gap:6px;
+  }
+  .item .del{
+    background:none;border:none;color:var(--ink-soft);
+    cursor:pointer;font-size:10.5px;text-decoration:underline;padding:0;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  .item .del:hover{color:var(--coral);}
+
+  .status{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:6px;
+    min-height:16px;
+  }
+  .share-note{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:12px;
+    color:var(--ink-soft);
+    background:rgba(31,58,46,0.06);
+    border-radius:4px;
+    padding:8px 12px;
+    margin-bottom:24px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Coole Vondsten</h1>
+    <p class="sub">Alles wat we door de jaren heen tegenkomen — af en toe herindelen we 'm samen.</p>
+    <div class="who">
+      <span>Jouw naam:</span>
+      <input id="author-input" placeholder="bv. Ruben" />
+    </div>
+  </header>
+
+  <div class="share-note">Iedereen die deze pagina opent en bewaart/deelt ziet dezelfde lijst en kan items toevoegen of verslepen.</div>
+
+  <div class="add-panel">
+    <h2>Iets cools tegengekomen?</h2>
+    <div class="add-row">
+      <input id="new-name" placeholder="Wat is het?" />
+      <input id="new-url" placeholder="Link (optioneel)" />
+      <input id="new-image" placeholder="Afbeelding-URL (optioneel)" />
+      <textarea id="new-note" placeholder="Waarom is het cool? (optioneel)"></textarea>
+      <button class="add-btn" id="add-btn">Toevoegen</button>
+    </div>
+    <div class="status" id="add-status"></div>
+  </div>
+
+  <div id="tiers"></div>
+
+  <div class="pool-section">
+    <h2>Nog niet ingedeeld</h2>
+    <div class="pool" id="pool-unranked"></div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   INSTELLINGEN — dit moet je zelf invullen
+   Zie de uitleg die erbij hoort voor hoe je aan deze URL komt.
+   ============================================================ */
+const FIREBASE_DB_URL = https://not-so-accurate-tierlist-default-rtdb.europe-west1.firebasedatabase.app/;
+ // bv. https://coolstuff-xxxx-default-rtdb.europe-west1.firebasedatabase.app
+
+const STORAGE_PATH = 'items.json';
+const TIERS = [
+  {id:'S', label:'S', color:'#D9603C'},
+  {id:'A', label:'A', color:'#B5773F'},
+  {id:'B', label:'B', color:'#5F7A4A'},
+  {id:'C', label:'C', color:'#3E6E63'},
+  {id:'D', label:'D', color:'#4A5568'},
+];
+
+let items = [];
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+function loadAuthor(){
+  const name = localStorage.getItem('coolstuff-author');
+  if(name) document.getElementById('author-input').value = name;
+}
+document.getElementById('author-input').addEventListener('change', (e)=>{
+  localStorage.setItem('coolstuff-author', e.target.value);
+});
+
+function dbUrl(){
+  return FIREBASE_DB_URL.replace(/\/$/, '') + '/' + STORAGE_PATH;
+}
+
+async function loadItems(){
+  if(FIREBASE_DB_URL.includes('PLAK_HIER')){
+    setStatus('Nog geen database gekoppeld — zie de instructies.');
+    render();
+    return;
+  }
+  try{
+    const res = await fetch(dbUrl());
+    const data = await res.json();
+    items = Array.isArray(data) ? data.filter(Boolean) : (data ? Object.values(data) : []);
+  }catch(e){
+    setStatus('Kon de lijst niet laden. Controleer je internetverbinding.');
+    items = [];
+  }
+  render();
+}
+
+async function saveItems(){
+  try{
+    await fetch(dbUrl(), {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(items)
+    });
+  }catch(e){
+    setStatus('Opslaan mislukt, probeer opnieuw.');
+  }
+}
+
+function setStatus(msg){
+  document.getElementById('add-status').textContent = msg;
+  if(msg) setTimeout(()=>{ document.getElementById('add-status').textContent=''; }, 2500);
+}
+
+function buildTiers(){
+  const container = document.getElementById('tiers');
+  container.innerHTML = '';
+  TIERS.forEach(t=>{
+    const row = document.createElement('div');
+    row.className = 'tier';
+    row.innerHTML = `
+      <div class="tier-label" style="background:${t.color}">${t.label}</div>
+      <div class="tier-body" data-tier="${t.id}"></div>
+    `;
+    container.appendChild(row);
+  });
+  attachDropzones();
+}
+
+function attachDropzones(){
+  const zones = [...document.querySelectorAll('.tier-body'), document.getElementById('pool-unranked')];
+  zones.forEach(zone=>{
+    zone.addEventListener('dragover', e=>{ e.preventDefault(); zone.classList.add('dragover'); });
+    zone.addEventListener('dragleave', ()=> zone.classList.remove('dragover'));
+    zone.addEventListener('drop', async e=>{
+      e.preventDefault();
+      zone.classList.remove('dragover');
+      const id = e.dataTransfer.getData('text/plain');
+      const item = items.find(i=>i.id===id);
+      if(!item) return;
+      item.tier = zone.dataset.tier || null;
+      await saveItems();
+      render();
+    });
+  });
+}
+
+function itemCard(item){
+  const el = document.createElement('div');
+  el.className = 'item' + (item.image ? ' has-image' : '');
+  el.draggable = true;
+  el.dataset.id = item.id;
+  const nameHtml = item.url
+    ? `<a href="${escapeAttr(item.url)}" target="_blank" rel="noopener">${escapeHtml(item.name)}</a>`
+    : escapeHtml(item.name);
+  el.innerHTML = `
+    ${item.image ? `<img class="thumb" src="${escapeAttr(item.image)}" alt="" onerror="this.style.display='none'" />` : ''}
+    <div class="name">${nameHtml}</div>
+    ${item.note ? `<div class="note">${escapeHtml(item.note)}</div>` : ''}
+    <div class="meta">
+      <span>${escapeHtml(item.addedBy || 'iemand')}</span>
+      <button class="del" data-id="${item.id}">verwijder</button>
+    </div>
+  `;
+  el.addEventListener('dragstart', e=>{
+    e.dataTransfer.setData('text/plain', item.id);
+  });
+  el.querySelector('.del').addEventListener('click', async ()=>{
+    items = items.filter(i=>i.id !== item.id);
+    await saveItems();
+    render();
+  });
+  return el;
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s){
+  return escapeHtml(s);
+}
+
+function render(){
+  document.querySelectorAll('.tier-body').forEach(zone=>{
+    zone.innerHTML = '';
+    zone.classList.remove('empty');
+    const tierItems = items.filter(i=>i.tier === zone.dataset.tier);
+    if(tierItems.length === 0){ zone.classList.add('empty'); }
+    tierItems.forEach(i=> zone.appendChild(itemCard(i)));
+  });
+  const pool = document.getElementById('pool-unranked');
+  pool.innerHTML = '';
+  const poolItems = items.filter(i=>!i.tier);
+  if(poolItems.length === 0){
+    pool.innerHTML = '<span style="font-family:Arial,sans-serif;font-size:12px;color:var(--ink-soft);font-style:italic;">nog niets toegevoegd</span>';
+  }
+  poolItems.forEach(i=> pool.appendChild(itemCard(i)));
+}
+
+document.getElementById('add-btn').addEventListener('click', async ()=>{
+  const nameEl = document.getElementById('new-name');
+  const urlEl = document.getElementById('new-url');
+  const imageEl = document.getElementById('new-image');
+  const noteEl = document.getElementById('new-note');
+  const name = nameEl.value.trim();
+  if(!name){ setStatus('Geef op wat je toevoegt.'); return; }
+  const author = document.getElementById('author-input').value.trim() || 'iemand';
+  const item = {
+    id: uid(),
+    name,
+    url: urlEl.value.trim(),
+    image: imageEl.value.trim(),
+    note: noteEl.value.trim(),
+    addedBy: author,
+    tier: null,
+    addedAt: Date.now()
+  };
+  items.push(item);
+  await saveItems();
+  nameEl.value=''; urlEl.value=''; imageEl.value=''; noteEl.value='';
+  setStatus('Toegevoegd.');
+  render();
+});
+
+buildTiers();
+loadAuthor();
+loadItems();
+</script>
+</body>
+</html>
