@@ -2,33 +2,34 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<title>Coole Vondsten</title>
+<title>Not That Accurate Tierlist</title>
 <style>
   :root{
-    --paper:#F3EEE1;
-    --ink:#2B2620;
-    --ink-soft:#6B6455;
-    --pine:#1F3A2E;
-    --pine-light:#2E5443;
-    --coral:#D9603C;
-    --line: rgba(43,38,32,0.15);
-    --card: #FFFDF7;
+    --bg:#14161A;
+    --panel:#1C1F24;
+    --card:#20242A;
+    --ink:#E9E6DE;
+    --ink-soft:#8B8A85;
+    --line: rgba(255,255,255,0.09);
+    --coral:#E2703A;
+    --accent:#3E6E63;
   }
   *{box-sizing:border-box;}
   body{
     margin:0;
-    background:var(--paper);
+    background:var(--bg);
     color:var(--ink);
     font-family: Georgia, 'Times New Roman', serif;
     -webkit-font-smoothing:antialiased;
   }
-  .wrap{max-width:900px;margin:0 auto;padding:32px 20px 80px;}
-  header{margin-bottom:28px;}
+  .wrap{max-width:960px;margin:0 auto;padding:32px 20px 80px;}
+  header{margin-bottom:24px;}
   h1{
-    font-size:34px;
+    font-size:32px;
     margin:0 0 4px;
     letter-spacing:0.5px;
     font-weight:700;
+    color:var(--ink);
   }
   .sub{
     font-family: Arial, Helvetica, sans-serif;
@@ -36,25 +37,19 @@
     font-size:14px;
     margin:0;
   }
-  .who{
+  .share-note{
     font-family: Arial, Helvetica, sans-serif;
-    font-size:13px;
-    margin-top:14px;
-    display:flex;
-    align-items:center;
-    gap:8px;
-  }
-  .who input{
-    font-family: Arial, Helvetica, sans-serif;
+    font-size:12px;
+    color:var(--ink-soft);
+    background:rgba(255,255,255,0.04);
     border:1px solid var(--line);
-    background:var(--card);
     border-radius:4px;
-    padding:6px 10px;
-    font-size:13px;
-    color:var(--ink);
+    padding:8px 12px;
+    margin:20px 0 28px;
   }
+
   .add-panel{
-    background:var(--card);
+    background:var(--panel);
     border:1px solid var(--line);
     border-radius:6px;
     padding:16px 18px;
@@ -64,29 +59,26 @@
     font-size:16px;
     margin:0 0 12px;
     font-weight:700;
+    color:var(--ink);
   }
   .add-row{
-    display:grid;
-    grid-template-columns: 1.3fr 1fr;
+    display:flex;
     gap:10px;
     font-family: Arial, Helvetica, sans-serif;
   }
-  .add-row input, .add-row textarea{
-    width:100%;
+  .add-row input{
+    flex:1;
     border:1px solid var(--line);
     border-radius:4px;
-    padding:8px 10px;
+    padding:9px 10px;
     font-size:13px;
     font-family: Arial, Helvetica, sans-serif;
     color:var(--ink);
-    background:#fff;
+    background:#15171B;
   }
-  .add-row textarea{grid-column: 1 / -1; resize:vertical; min-height:44px;}
+  .add-row input::placeholder{color:var(--ink-soft);}
   .add-btn{
-    grid-column: 1 / -1;
-    justify-self:start;
-    margin-top:2px;
-    background:var(--pine);
+    background:var(--accent);
     color:#F3EEE1;
     border:none;
     border-radius:4px;
@@ -97,15 +89,14 @@
     cursor:pointer;
     letter-spacing:0.3px;
   }
-  .add-btn:hover{background:var(--pine-light);}
-  .add-btn:disabled{opacity:0.5;cursor:default;}
+  .add-btn:hover{filter:brightness(1.15);}
 
   .tier{
     display:flex;
     border:1px solid var(--line);
     border-radius:6px;
-    margin-bottom:10px;
-    background:var(--card);
+    margin-bottom:8px;
+    background:var(--panel);
     min-height:76px;
     overflow:hidden;
   }
@@ -115,9 +106,11 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:22px;
+    font-size:16px;
     font-weight:700;
     color:#fff;
+    text-align:center;
+    padding:4px;
   }
   .tier-body{
     flex:1;
@@ -127,7 +120,7 @@
     padding:10px;
     align-content:flex-start;
   }
-  .tier-body.dragover{background:rgba(31,58,46,0.07);}
+  .tier-body.dragover{background:rgba(255,255,255,0.05);}
   .tier-body.empty::after{
     content:'sleep hier iets naartoe';
     font-family: Arial, Helvetica, sans-serif;
@@ -142,6 +135,7 @@
     font-size:16px;
     margin:0 0 10px;
     font-weight:700;
+    color:var(--ink);
   }
   .pool{
     display:flex;
@@ -152,48 +146,44 @@
     border:1px dashed var(--line);
     border-radius:6px;
   }
-  .pool.dragover{background:rgba(217,96,60,0.08);}
+  .pool.dragover{background:rgba(226,112,58,0.08);}
 
   .item{
-    background:#fff;
+    background:var(--card);
     border:1px solid var(--line);
-    border-left:3px solid var(--coral);
     border-radius:4px;
-    padding:7px 10px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size:12.5px;
-    width:130px;
+    padding:0;
+    width:110px;
+    height:110px;
     cursor:grab;
-    line-height:1.4;
-  }
-  .item.has-image{padding:0 0 7px;overflow:hidden;}
-  .item.has-image .name, .item.has-image .note, .item.has-image .meta{padding-left:10px;padding-right:10px;}
-  .item .thumb{
-    width:100%;
-    height:90px;
-    object-fit:cover;
-    display:block;
-    margin-bottom:6px;
-    background:var(--paper);
+    position:relative;
+    overflow:hidden;
   }
   .item:active{cursor:grabbing;}
-  .item .name{font-weight:bold;color:var(--ink);}
-  .item .name a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--coral);}
-  .item .note{color:var(--ink-soft);margin-top:2px;}
-  .item .meta{
-    color:var(--ink-soft);
-    font-size:10.5px;
-    margin-top:4px;
-    display:flex;
-    justify-content:space-between;
-    gap:6px;
+  .item .thumb{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
   }
   .item .del{
-    background:none;border:none;color:var(--ink-soft);
-    cursor:pointer;font-size:10.5px;text-decoration:underline;padding:0;
+    position:absolute;
+    top:3px;
+    right:3px;
+    background:rgba(0,0,0,0.55);
+    border:none;
+    color:#F3EEE1;
+    width:18px;
+    height:18px;
+    line-height:18px;
+    text-align:center;
+    border-radius:3px;
+    cursor:pointer;
+    font-size:12px;
+    padding:0;
     font-family: Arial, Helvetica, sans-serif;
   }
-  .item .del:hover{color:var(--coral);}
+  .item .del:hover{background:var(--coral);}
 
   .status{
     font-family: Arial, Helvetica, sans-serif;
@@ -202,38 +192,22 @@
     margin-top:6px;
     min-height:16px;
   }
-  .share-note{
-    font-family: Arial, Helvetica, sans-serif;
-    font-size:12px;
-    color:var(--ink-soft);
-    background:rgba(31,58,46,0.06);
-    border-radius:4px;
-    padding:8px 12px;
-    margin-bottom:24px;
-  }
 </style>
 </head>
 <body>
 <div class="wrap">
 
   <header>
-    <h1>Coole Vondsten</h1>
+    <h1>Not That Accurate Tierlist</h1>
     <p class="sub">Alles wat we door de jaren heen tegenkomen — af en toe herindelen we 'm samen.</p>
-    <div class="who">
-      <span>Jouw naam:</span>
-      <input id="author-input" placeholder="bv. Ruben" />
-    </div>
   </header>
 
-  <div class="share-note">Iedereen die deze pagina opent en bewaart/deelt ziet dezelfde lijst en kan items toevoegen of verslepen.</div>
+  <div class="share-note">Iedereen die deze pagina opent ziet dezelfde lijst en kan afbeeldingen toevoegen of verslepen.</div>
 
   <div class="add-panel">
     <h2>Iets cools tegengekomen?</h2>
     <div class="add-row">
-      <input id="new-name" placeholder="Wat is het?" />
-      <input id="new-url" placeholder="Link (optioneel)" />
-      <input id="new-image" placeholder="Afbeelding-URL (optioneel)" />
-      <textarea id="new-note" placeholder="Waarom is het cool? (optioneel)"></textarea>
+      <input id="new-image" placeholder="Afbeelding-URL" />
       <button class="add-btn" id="add-btn">Toevoegen</button>
     </div>
     <div class="status" id="add-status"></div>
@@ -250,32 +224,28 @@
 
 <script>
 /* ============================================================
-   INSTELLINGEN — dit moet je zelf invullen
-   Zie de uitleg die erbij hoort voor hoe je aan deze URL komt.
+   INSTELLINGEN — dit moet je zelf invullen bla bla bla
    ============================================================ */
-const FIREBASE_DB_URL = https://not-so-accurate-tierlist-default-rtdb.europe-west1.firebasedatabase.app/;
- // bv. https://coolstuff-xxxx-default-rtdb.europe-west1.firebasedatabase.app
+const FIREBASE_DB_URL = "https://not-so-accurate-tierlist-default-rtdb.europe-west1.firebasedatabase.app/"; // bv. https://coolstuff-xxxx-default-rtdb.europe-west1.firebasedatabase.app
 
 const STORAGE_PATH = 'items.json';
+
 const TIERS = [
-  {id:'S', label:'S', color:'#D9603C'},
-  {id:'A', label:'A', color:'#B5773F'},
-  {id:'B', label:'B', color:'#5F7A4A'},
-  {id:'C', label:'C', color:'#3E6E63'},
-  {id:'D', label:'D', color:'#4A5568'},
+  {id:'Spp', label:'S++', color:'#8E1B1B'},
+  {id:'Sp',  label:'S+',  color:'#B23A2B'},
+  {id:'S',   label:'S',   color:'#D9603C'},
+  {id:'A',   label:'A',   color:'#C6873F'},
+  {id:'B',   label:'B',   color:'#94943F'},
+  {id:'C',   label:'C',   color:'#5F7A4A'},
+  {id:'D',   label:'D',   color:'#3E6E63'},
+  {id:'E',   label:'E',   color:'#3B5A6E'},
+  {id:'F',   label:'F',   color:'#4A5568'},
+  {id:'Fm',  label:'F-',  color:'#33383F'},
 ];
 
 let items = [];
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
-
-function loadAuthor(){
-  const name = localStorage.getItem('coolstuff-author');
-  if(name) document.getElementById('author-input').value = name;
-}
-document.getElementById('author-input').addEventListener('change', (e)=>{
-  localStorage.setItem('coolstuff-author', e.target.value);
-});
 
 function dbUrl(){
   return FIREBASE_DB_URL.replace(/\/$/, '') + '/' + STORAGE_PATH;
@@ -348,22 +318,18 @@ function attachDropzones(){
   });
 }
 
+function escapeAttr(s){
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
 function itemCard(item){
   const el = document.createElement('div');
-  el.className = 'item' + (item.image ? ' has-image' : '');
+  el.className = 'item';
   el.draggable = true;
   el.dataset.id = item.id;
-  const nameHtml = item.url
-    ? `<a href="${escapeAttr(item.url)}" target="_blank" rel="noopener">${escapeHtml(item.name)}</a>`
-    : escapeHtml(item.name);
   el.innerHTML = `
-    ${item.image ? `<img class="thumb" src="${escapeAttr(item.image)}" alt="" onerror="this.style.display='none'" />` : ''}
-    <div class="name">${nameHtml}</div>
-    ${item.note ? `<div class="note">${escapeHtml(item.note)}</div>` : ''}
-    <div class="meta">
-      <span>${escapeHtml(item.addedBy || 'iemand')}</span>
-      <button class="del" data-id="${item.id}">verwijder</button>
-    </div>
+    <img class="thumb" src="${escapeAttr(item.image)}" alt="" onerror="this.parentElement.remove()" />
+    <button class="del" data-id="${item.id}">✕</button>
   `;
   el.addEventListener('dragstart', e=>{
     e.dataTransfer.setData('text/plain', item.id);
@@ -374,13 +340,6 @@ function itemCard(item){
     render();
   });
   return el;
-}
-
-function escapeHtml(s){
-  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-function escapeAttr(s){
-  return escapeHtml(s);
 }
 
 function render(){
@@ -401,32 +360,18 @@ function render(){
 }
 
 document.getElementById('add-btn').addEventListener('click', async ()=>{
-  const nameEl = document.getElementById('new-name');
-  const urlEl = document.getElementById('new-url');
   const imageEl = document.getElementById('new-image');
-  const noteEl = document.getElementById('new-note');
-  const name = nameEl.value.trim();
-  if(!name){ setStatus('Geef op wat je toevoegt.'); return; }
-  const author = document.getElementById('author-input').value.trim() || 'iemand';
-  const item = {
-    id: uid(),
-    name,
-    url: urlEl.value.trim(),
-    image: imageEl.value.trim(),
-    note: noteEl.value.trim(),
-    addedBy: author,
-    tier: null,
-    addedAt: Date.now()
-  };
+  const image = imageEl.value.trim();
+  if(!image){ setStatus('Plak eerst een afbeelding-URL.'); return; }
+  const item = { id: uid(), image, tier: null, addedAt: Date.now() };
   items.push(item);
   await saveItems();
-  nameEl.value=''; urlEl.value=''; imageEl.value=''; noteEl.value='';
+  imageEl.value='';
   setStatus('Toegevoegd.');
   render();
 });
 
 buildTiers();
-loadAuthor();
 loadItems();
 </script>
 </body>
